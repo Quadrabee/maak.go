@@ -1,0 +1,7 @@
+FROM alpine
+
+WORKDIR /
+
+COPY src/ .
+
+CMD ["sh", "script.sh"]

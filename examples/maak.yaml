@@ -1,0 +1,61 @@
+project:
+  name: examples
+components:
+  ### By default we expect components to have a single container
+  ### We assume the Dockerfile is located in a folder of the same name
+  ### We also assume that all files in that folder (and recursively)
+  ### are dependencies of our Dockerfile
+  ### .
+  ### +-- basic/
+  ### |   +-- Dockerfile
+  basic:
+  ### We can override the default dependencies
+  ###
+  ### .
+  ### +-- basic/
+  ### |   +-- Dockerfile
+  depsdef:
+    containers:
+      - dependencies:
+          glob:
+            - assets/**/*
+            - src/**/*
+            - Dockerfile
+  ### We can have components that have more than one container
+  ### If dockerfile is not provided, we assume it will be suffixed with the container's name
+  ###
+  ### .
+  ### +-- multi-container/
+  ### |   +-- Dockerfile.nginx
+  ### |   +-- Dockerfile.php-fpm
+  multi-container:
+    containers:
+      - name: cont1
+      - name: cont2
+        dockerfile: Dockerfile.container-2
+        dependencies:
+          glob:
+            - src/greeting.txt
+  ### We can have components depending on others
+  ### This way we ensure that our dependencies are built first, and that we
+  ### rebuild the dependent upon parent changes
+  depend-on-depsdef:
+    containers:
+      - dependencies:
+          components:
+            - depsdef
+  ### We can have containers using a different context that their own folder
+  ### the dockerfile setting is relative to that context
+  ### But you can override the dockerfile to point to a subfolder if need be
+  ### In this example this container is only rebuilt if any of the other component
+  ### are rebuilt
+  different-context:
+    containers:
+      - context: .
+        dockerfile: different-context/Dockerfile
+        dependencies:
+          components:
+            - basic
+            - multi-container
+            - depend-on-basic
+          glob: []
