@@ -1,14 +1,12 @@
 #!/bin/bash
 
-MAAK=${MAAK:-maak}
-
 die() {
   echo $1
   exit -1
 }
 
 build() {
-  $MAAK build $1 > /dev/null
+  maak build $1 > /dev/null
   if [ $? -ne 0 ]; then
     echo "maak build $1: failed"
   fi
@@ -18,7 +16,7 @@ build() {
 rm -rf .make
 
 # Generate the makefile
-$MAAK init makefile
+maak init makefile
 
 ##
 ## Test 1: (basic) build

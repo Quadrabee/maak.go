@@ -1,4 +1,4 @@
-PLATFORM=darwin/amd64
+PLATFORM := $(or ${PLATFORM},${PLATFORM},darwin/amd64)
 
 build: maak
 
@@ -10,7 +10,11 @@ make/bindata.go: make/templates/*.tpl
 
 .PHONY: bin/maak
 
-bin/maak:
+test: bin/maak
+	cd examples && \
+	PATH=${PWD}/bin/:${PATH} ./test.sh
+
+bin/maak: go.* *.go **/*.go
 	@DOCKER_BUILDKIT=1 docker build . --target bin \
 		--output bin/ \
 		--platform ${PLATFORM}
